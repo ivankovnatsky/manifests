@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: disk-checker
+  namespace: blues
+  labels:
+    app: disk-checker
+spec:
+  selector:
+    matchLabels:
+      app: disk-checker
+  template:
+    metadata:
+      labels:
+        app: disk-checker
+    spec:
+      hostPID: true
+      hostIPC: true
+      hostNetwork: true
+      containers:
+      - resources:
+          requests:
+            cpu: 0.15
+        securityContext:
+          privileged: true
+        image: ikovnatsky/dust:latest
+        imagePullPolicy: Always
+        name: disk-checked
+        command: ["/bin/sh"]
+        args: ["-c", "dust -c -d 7 /host"]
+        volumeMounts:
+        - name: host
+          mountPath: "/host"
+      volumes:
+        - name: host
+          hostPath:
+            path: "/"
