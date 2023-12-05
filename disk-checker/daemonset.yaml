@@ -17,6 +17,15 @@ spec:
       hostPID: true
       hostIPC: true
       hostNetwork: true
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - ip-10-0-42-65.eu-central-1.compute.internal
       containers:
       - resources:
           requests:
@@ -26,8 +35,10 @@ spec:
         image: ikovnatsky/dust:latest
         imagePullPolicy: Always
         name: disk-checked
-        command: ["/bin/sh"]
-        args: ["-c", "dust -c -d 7 /host"]
+        # command: ["/bin/sh"]
+        command: ["sleep"]
+        # args: ["-c", "dust -p -c -d 7 /host"]
+        args: ["infinity"]
         volumeMounts:
         - name: host
           mountPath: "/host"
