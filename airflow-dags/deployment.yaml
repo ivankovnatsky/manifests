@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: debug-dags
+  namespace: airflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: debug-dags
+  template:
+    metadata:
+      labels:
+        app: debug-dags
+    spec:
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 0
+      containers:
+      - name: ubuntu
+        image: ubuntu:latest
+        command: ["sleep"]
+        args: ["infinity"]
+        volumeMounts:
+        - name: dags-data
+          mountPath: /opt/airflow/dags
+      volumes:
+      - name: dags-data
+        emptyDir: {}
+      nodeSelector:
+        eks.amazonaws.com/nodegroup: airflow
+      tolerations:
+      - key: "airflow-dedicated"
+        operator: "Equal"
+        value: "on_demand"
+        effect: "NoSchedule"
